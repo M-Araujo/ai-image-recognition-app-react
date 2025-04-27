@@ -1,37 +1,40 @@
-
 function FaceRecognition() {
   return (
-    <>
-
-      <div className="app-container">
-        <div className="intro-container fade-in">
-          <h1 className="intro-title">Welcome to My Face Detection App! 👋</h1>
-          <p className="intro-text">
-            This is an AI-powered face detection app built with Vue.js & Face-api.js. Upload
-            an image, and the app will detect faces instantly!
-          </p>
-          <p className="intro-text">
-            I'm Miriam Araújo, a passionate web developer focused on JavaScript, Vue.js, and
-            AI applications.
-          </p>
-        </div>
-
-        <div className="face-recognition-container fade-in">
-          <h2 className="title">Face Detection</h2>
-
-          <div className="button-group">
+    <div className="w-full max-w-[1200px] mx-auto bg-white rounded-2xl">
+      <div className="flex flex-col md:flex-row gap-3">
+        <div className="p-5 flex-1 min-h-[175px]">
 
 
-            <button className="custom-btn clear-btn">
-              <i className="pi pi-trash"></i> Clear Image
-            </button>
+          <div className="intro-container flex flex-col items-center justify-center min-h-screen px-4">
+            <h1 className="intro-title text-3xl text-center mb-6">
+              Welcome to My Face Detection App!
+            </h1>
+
+            <div className="max-w-prose space-y-4">
+              <p className="intro-text text-left">
+                This is an AI-powered face detection app built with React & Face-api.js.
+                Upload an image, and the app will detect faces instantly!
+              </p>
+              <p className="intro-text text-left">
+                I'm Miriam Araújo a Web Developer focused on frontend applications.
+              </p>
+
+              <button className="uploadBtn">
+                Upload image
+              </button>
+            </div>
           </div>
 
-          <div className="image-preview-container" >
+
+
+        </div>
+        <div className=" p-5 flex-1 min-h-[175px]">
+          <div className="image-preview-container">
             <div className="canvas-wrapper">
               <img
+                src="./assets/defaultImg.jpg"
                 alt="Uploaded Image"
-                className="image-preview fade-in"
+                className="image-preview rounded-2xl"
               />
               <canvas className="canvas-overlay"></canvas>
             </div>
@@ -45,7 +48,7 @@ function FaceRecognition() {
 
             <p className="face-count">
               <span className="text-green-500">
-                🟢 Detected Faces:
+                🟢 Detected Faces: 999
               </span>
               <span className="text-red-500">
                 🔴 No Faces Detected
@@ -54,20 +57,10 @@ function FaceRecognition() {
             </p>
           </div>
         </div>
-
-        <footer className="footer fade-in">
-          <p>🔗 Connect with me:</p>
-          <div className="social-links">
-            <a href="https://github.com/M-Araujo" target="_blank"
-            ><i className="pi pi-github"></i> GitHub</a>
-            <a href="https://www.linkedin.com/in/miriam-araujo-dev" target="_blank"
-            ><i className="pi pi-linkedin"></i> LinkedIn</a>
-            <a href="https://codepen.io/M-Araujo" target="_blank"><i className="pi pi-codepen"></i> CodePen</a>
-          </div>
-        </footer>
       </div>
-    </>
+    </div>
   );
-};
+}
+
 
 export default FaceRecognition;
