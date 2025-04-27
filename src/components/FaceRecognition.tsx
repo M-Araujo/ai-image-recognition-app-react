@@ -2,6 +2,7 @@
 function FaceRecognition() {
   return (
     <>
+
       <div className="app-container">
         <div className="intro-container fade-in">
           <h1 className="intro-title">Welcome to My Face Detection App! 👋</h1>
@@ -26,7 +27,7 @@ function FaceRecognition() {
             </button>
           </div>
 
-          <div className="image-preview-container" v-if="src">
+          <div className="image-preview-container" >
             <div className="canvas-wrapper">
               <img
                 alt="Uploaded Image"
@@ -37,19 +38,19 @@ function FaceRecognition() {
           </div>
 
           <div className="status-container">
-            <div v-if="loading" className="loading-spinner">
+            <div className="loading-spinner">
               <div className="spinner"></div>
               <p>Detecting Faces...</p>
             </div>
 
             <p className="face-count">
-              <span v-if="faceCount !== null && faceCount > 0" className="text-green-500">
+              <span className="text-green-500">
                 🟢 Detected Faces:
               </span>
-              <span v-else-if="faceCount === 0" className="text-red-500">
+              <span className="text-red-500">
                 🔴 No Faces Detected
               </span>
-              <span v-else> ⏳ Waiting for image...</span>
+              <span > ⏳ Waiting for image...</span>
             </p>
           </div>
         </div>
