@@ -1,4 +1,7 @@
 function FaceRecognition() {
+
+  const defaultImage = true;
+
   return (
     <div className="w-full max-w-[1200px] mx-auto bg-white rounded-2xl">
       <div className="flex flex-col md:flex-row gap-3">
@@ -31,11 +34,14 @@ function FaceRecognition() {
         <div className=" p-5 flex-1 min-h-[175px]">
           <div className="image-preview-container">
             <div className="canvas-wrapper">
-              <img
+
+              {defaultImage ?
+                <img
                 src="./assets/defaultImg.jpg"
                 alt="Uploaded Image"
-                className="image-preview rounded-2xl"
-              />
+                  className="image-preview rounded-2xl" /> :
+                ''}
+
               <canvas className="canvas-overlay"></canvas>
             </div>
           </div>
