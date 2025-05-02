@@ -1,6 +1,20 @@
+import Button from './ui/Button.tsx';
+import { useState } from 'react';
+import FileUpload from './FileUpload.tsx';
+
 function FaceRecognition() {
 
-  const defaultImage = true;
+  const [defaultImage, setDefaultImage] = useState<boolean>(true);
+  /*const [uploadedImage, setUploadedImage] = useState<string>('');
+  const [hasUploadedImage, setHasUploadedImage] = useState<boolean>(false);*/
+
+  const uploadImage = (): void => {
+    setDefaultImage(false);
+  }
+
+  const resetImage = (): void => {
+    setDefaultImage(true);
+  }
 
   return (
     <div className="w-full max-w-[1200px] mx-auto bg-white rounded-2xl">
@@ -22,9 +36,8 @@ function FaceRecognition() {
                 I'm Miriam Araújo a Web Developer focused on frontend applications.
               </p>
 
-              <button className="uploadBtn">
-                Upload image
-              </button>
+              <Button onClick={uploadImage} btnClasses="uploadBtn" text="Upload Image" />
+              <Button onClick={resetImage} btnClasses="uploadBtn" text="Delete image" />
             </div>
           </div>
 
@@ -36,30 +49,45 @@ function FaceRecognition() {
             <div className="canvas-wrapper">
 
               {defaultImage ?
-                <img
-                src="./assets/defaultImg.jpg"
-                alt="Uploaded Image"
-                  className="image-preview rounded-2xl" /> :
-                ''}
+                (
+                  <img
+                    src="./assets/defaultImg.jpg"
+                    alt="Uploaded Image"
+                    className="image-preview rounded-2xl" />
+                ) : (
+                  <FileUpload />
+                )
+              }
 
               <canvas className="canvas-overlay"></canvas>
             </div>
           </div>
 
           <div className="status-container">
+
             <div className="loading-spinner">
               <div className="spinner"></div>
               <p>Detecting Faces...</p>
             </div>
 
             <p className="face-count">
-              <span className="text-green-500">
+
+              {defaultImage ? (
+                <span > ⏳ Waiting for image...</span>
+              ) : (
+                <>
+                    <span className="text-green-500">
                 🟢 Detected Faces: 999
-              </span>
-              <span className="text-red-500">
-                🔴 No Faces Detected
-              </span>
-              <span > ⏳ Waiting for image...</span>
+                    </span>
+                    <span className="text-red-500">
+                      🔴 No Faces Detected
+                    </span>
+                </>
+              )
+              }
+
+
+
             </p>
           </div>
         </div>
