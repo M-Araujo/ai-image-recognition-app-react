@@ -45,18 +45,19 @@
   /* Make this a positioning context */
 }
 
-.canvas-overlay {
-  position: absolute;
-  /* Position absolutely within the container */
-  top: 0;
-  left: 0;
-  /* Ensure the canvas is on top of the image */
-  z-index: 2;
-  pointer-events: none;
-  /* Important: stops canvas from intercepting clicks */
+.image-preview {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-.image-preview {
-  /* Ensure the image is below the canvas */
-  z-index: 1;
+.canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.canvas-wrapper {
+  position: relative;
 }
