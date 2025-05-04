@@ -1,45 +1,106 @@
 import Button from './ui/Button.tsx';
-import { useState } from 'react';
-import { useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import * as faceapi from '@vladmandic/face-api';
 
 function FaceRecognition() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [defaultImage, setDefaultImage] = useState<boolean>(true);
   const [preview, setPreview] = useState<string | null>(null);
-  /*const [hasUploadedImage, setHasUploadedImage] = useState<boolean>(false);*/
+  const [detections, setDetections] = useState<faceapi.FaceDetection[]>([]);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // equals to fileuploadbutton
-  /*
-  const uploadImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log('upload image called');
-    setDefaultImage(false);
-    fileInputRef.current?.click();
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setPreview(reader.result as string);
-    reader.readAsDataURL(file);
-  }*/
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        console.log('loading the face detection models');
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+        console.log('face detection models loaded');
+
+      } catch (error) {
+        console.log('error loading face detection models', error);
+      }
+    }
+    loadModels();
+  }, []);
+
+
+  useEffect(() => {
+    const drawDetections = () => {
+      if (canvas.current && imageRef.current && detections.length > 0 && imageLoaded && dimensions.width > 0 && dimensions.height > 0) {
+        const canvasElement = canvas.current as HTMLCanvasElement; // Explicitly cast
+        const image = imageRef.current;
+        const ctx = canvasElement?.getContext('2d'); // Use optional chaining
+        if (ctx) {
+
+          canvasElement.width = dimensions.width;
+          canvasElement.height = dimensions.height;
+          faceapi.matchDimensions(canvasElement, dimensions);
+          ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+          faceapi.draw.drawDetections(canvasElement, detections);
+
+          /*const displaySize = { width: image.width, height: image.height };
+          faceapi.matchDimensions(canvasElement, displaySize);
+          ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+          faceapi.draw.drawDetections(canvasElement, detections);*/
+        }
+      }
+    };
+
+    drawDetections();
+
+  }, [detections, dimensions, imageLoaded]);
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setDefaultImage(false);
+    setImageLoaded(false);
+    setDimensions({ width: 0, height: 0 });
     console.log('updating the image preview');
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
+  }
 
+  const handleImageLoaded = async () => {
+
+    console.log('image loaded attempting face detection');
+    if (imageRef.current) {
+
+      const img = new Image();
+      img.src = imageRef.current.src;
+      img.onload = async () => {
+        setDimensions({ width: img.width, height: img.height });
+        setImageLoaded(true);
+      }
+
+      try {
+        const results = await faceapi.detectAllFaces(
+          imageRef.current,
+          new faceapi.TinyFaceDetectorOptions()
+        );
+        console.log('detection', results);
+
+        setDetections(results);
+      } catch (error) {
+        console.log('error during face detection', error);
+      }
+    }
   }
 
   const resetImage = (): void => {
     setDefaultImage(true);
+    setDetections([]);
+    setDimensions({ width: 0, height: 0 });
   }
 
   return (
@@ -91,13 +152,22 @@ function FaceRecognition() {
                 {defaultImage ? (
                   <span > ⏳ Waiting for image...</span>
                 ) : (
-                  <>
-                    <span className="text-green-500">
-                        🟢 Detected Faces: 999
-                    </span>
-                    <span className="text-red-500">
-                      🔴 No Faces Detected
-                    </span>
+                    <>
+                      {detections && detections.length > 0
+                        ?
+                        (
+                          <span className="text-green-500">
+                            🟢 Detected Faces: {detections.length}
+                          </span>
+
+                        ) : (
+                          <span className="text-red-500">
+                            🔴 No Faces Detected
+                          </span>
+                        )
+                      }
+
+
                   </>
                 )
                 }
@@ -119,7 +189,13 @@ function FaceRecognition() {
                     {
                       preview && (
                         <div className="mt-4">
-                          <img src={preview} alt="Preview" className="image-preview rounded-2xl" />
+                          <img
+                            src={preview}
+                            ref={imageRef}
+                            onLoad={handleImageLoaded}
+                            alt="Preview"
+                            className="image-preview rounded-2xl"
+                          />
                         </div>
                       )
                     }
@@ -127,7 +203,7 @@ function FaceRecognition() {
                 )
               }
 
-              <canvas className="canvas-overlay"></canvas>
+              <canvas ref={canvas} className="canvas-overlay"></canvas>
             </div>
           </div>
         </div>
