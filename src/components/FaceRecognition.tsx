@@ -69,6 +69,7 @@ function FaceRecognition() {
       const img = imageRef.current;
       const displayWidth = img.clientWidth; // Use display dimensions
       const displayHeight = img.clientHeight;
+      resetSquares();
 
       setDimensions({ width: displayWidth, height: displayHeight });
 
@@ -95,17 +96,33 @@ function FaceRecognition() {
   const resetAllStates = (): void => {
     setDefaultImage(false);
     setDetections([]); // Clear previous detections
+    resetSquares();
     setImageLoaded(false);
     setDimensions({ width: 0, height: 0 });
 
   } 
 
+  const resetSquares = () => {
+
+    if (canvasRef.current) { //check if canvasRef.current is defined.
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        console.log('resetting squares called!!');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }
+
   // Reset image
   const resetImage = () => {
-    setDefaultImage(true);
-    setDetections([]);
+    setDetections([]); // Clear previous detections
     setDimensions({ width: 0, height: 0 });
     setImageLoaded(false);
+    setDefaultImage(true); // Reset to default image.
+    setPreview(null);
+    resetSquares();
   };
 
   return (
