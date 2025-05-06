@@ -20,6 +20,7 @@ function FaceRecognition() {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [dimensions, setDimensions] = useState<ImageDimensions>({ width: 0, height: 0 });
+  const [error, setError] = useState<string | null>(null);
 
   // Load face detection models
   useEffect(() => {
@@ -77,16 +78,24 @@ function FaceRecognition() {
 
 
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
     setIsImageLoading(true);
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const validationError = imageValidation(file);
+    if (validationError) {
+      setError(validationError);
+      setIsImageLoading(false);
+      return;
+    }
 
     resetDetectionState({ keepPreview: true });
 
     const reader = new FileReader();
     reader.onload = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
-    setIsImageLoading(false);
+
   }, [resetDetectionState]);
 
 
@@ -125,11 +134,30 @@ function FaceRecognition() {
     fileInputRef.current?.click();
   }, []);
 
+
+  const imageValidation = (file: File): string | null => {
+    console.log('image validation called');
+    const allowedTypes = ['image/jpeg', 'image/png'];
+
+    if (!allowedTypes.includes(file.type)) {
+      console.log('first error');
+      return 'Please upload a JPEG or PNG image.';
+    }
+
+    const maxSizeInBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeInBytes) {
+      console.log('second error');
+      return 'Image too large, please keep it under 5MB.';
+    }
+    return null;
+  }
+
+
   return (
     <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="p-5 flex-1 min-h-[175px]">
-          
+
           <div className="intro-container flex flex-col items-center justify-center px-4 p-4 align-baseline inline-block">
             <h1 className="intro-title text-3xl text-center mb-6">
               Welcome to My Face Detection App!
@@ -162,6 +190,12 @@ function FaceRecognition() {
                   text="Clear image"
                 />
               </div>
+
+              {error && (
+                <p className="mt-2 text-sm text-red-600 text-center">
+                  {error}
+                </p>
+              )}
 
             </div>
           </div>
