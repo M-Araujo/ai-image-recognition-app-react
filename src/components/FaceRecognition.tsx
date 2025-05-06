@@ -149,16 +149,20 @@ function FaceRecognition() {
                 style={{ display: 'none' }}
                 accept="image/*"
               />
-              <Button
-                onClick={triggerFileInput}
-                btnClasses="uploadBtn"
-                text="Upload Image"
-              />
-              <Button
-                onClick={resetToDefault}
-                btnClasses="clearBtn"
-                text="Clear image"
-              />
+
+              <div className="flex justify-center gap-4 mt-6"> {/* Added wrapper div */}
+                <Button
+                  onClick={triggerFileInput}
+                  btnClasses="uploadBtn"
+                  text="Upload Image"
+                />
+                <Button
+                  onClick={resetToDefault}
+                  btnClasses="clearBtn"
+                  text="Clear image"
+                />
+              </div>
+
             </div>
           </div>
         </div>
