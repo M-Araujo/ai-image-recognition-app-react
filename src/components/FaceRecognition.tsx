@@ -126,10 +126,11 @@ function FaceRecognition() {
   }, []);
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto bg-white rounded-2xl">
+    <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="p-5 flex-1 min-h-[175px]">
-          <div className="intro-container flex flex-col items-center justify-center min-h-screen px-4">
+          
+          <div className="intro-container flex flex-col items-center justify-center px-4 p-4 align-baseline inline-block">
             <h1 className="intro-title text-3xl text-center mb-6">
               Welcome to My Face Detection App!
             </h1>
@@ -155,14 +156,14 @@ function FaceRecognition() {
               />
               <Button
                 onClick={resetToDefault}
-                btnClasses="uploadBtn"
-                text="Delete image"
+                btnClasses="clearBtn"
+                text="Clear image"
               />
             </div>
           </div>
         </div>
         <div className="p-5 flex-1 min-h-[175px]">
-          <div className="image-preview-container flex flex-col items-center justify-center min-h-screen px-4">
+          <div className="image-preview-container flex flex-col items-center justify-center px-4 p-4">
             <div className="status-container">
               {isImageLoading && (
                 <div className="loading-spinner">
@@ -172,7 +173,7 @@ function FaceRecognition() {
               )
               }
 
-              <p className="face-count">
+              <p className="face-count ">
                 {!isDefaultImage ? (
                   (
                     <>
@@ -195,7 +196,7 @@ function FaceRecognition() {
                 <img
                   src="./assets/defaultImg.jpg"
                   alt="Default placeholder"
-                  className="image-preview rounded-2xl"
+                  className="image-preview rounded-2xl max-h-80"
                 />
               ) : (
                   imagePreview && (
@@ -204,7 +205,7 @@ function FaceRecognition() {
                         src={imagePreview}
                         ref={imageRef}
                         alt="Uploaded preview"
-                        className="image-preview rounded-2xl"
+                        className="image-preview rounded-2xl max-h-80"
                         onLoad={handleImageLoad}
                       />
                     </div>

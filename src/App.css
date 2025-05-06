@@ -40,6 +40,11 @@
   background-color: #FFE381;
   text-align: center;
 }
+.clearBtn {
+  background-color: #FF6E5E;
+  text-align: center;
+}
+
 .canvas-wrapper {
   position: relative;
   /* Make this a positioning context */
