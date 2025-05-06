@@ -1,129 +1,129 @@
 import Button from './ui/Button.tsx';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as faceapi from '@vladmandic/face-api';
 
+interface ImageDimensions {
+  width: number;
+  height: number;
+}
+
 function FaceRecognition() {
+  // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null); // Use canvasRef
-  const [defaultImage, setDefaultImage] = useState<boolean>(true);
-  const [preview, setPreview] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // State
+  const [isDefaultImage, setIsDefaultImage] = useState(true);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [detections, setDetections] = useState<faceapi.FaceDetection[]>([]);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [dimensions, setDimensions] = useState<ImageDimensions>({ width: 0, height: 0 });
 
   // Load face detection models
   useEffect(() => {
-    const loadModels = async () => {
+    const loadDetectionModels = async () => {
       try {
-        console.log('loading the face detection models');
         await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        console.log('face detection models loaded');
+        console.log('Face detection models loaded successfully');
       } catch (error) {
-        console.log('error loading face detection models', error);
+        console.error('Failed to load face detection models:', error);
       }
     };
-    loadModels();
+
+    loadDetectionModels();
   }, []);
 
-  // Draw detections on canvas
+  // Draw face detections on canvas
   useEffect(() => {
-    if (canvasRef.current && detections.length > 0) {
+    const drawFaceDetections = () => {
+      if (!canvasRef.current || detections.length === 0) return;
+
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
 
       if (ctx) {
-        // Match canvas to image display size
         canvas.width = dimensions.width;
         canvas.height = dimensions.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw properly scaled detections
         faceapi.draw.drawDetections(canvas, detections);
       }
-    }
+    };
+
+    drawFaceDetections();
   }, [detections, dimensions]);
 
-  // Trigger file input
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
 
-  // Handle file change
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetDetectionState = useCallback((options: {
+    keepPreview?: boolean;
+    resetToDefault?: boolean
+  } = {}) => {
+    setDetections([]);
+    setIsImageLoaded(false);
+    setDimensions({ width: 0, height: 0 });
+
+    const ctx = canvasRef.current?.getContext('2d');
+    ctx?.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    if (options.resetToDefault) {
+      setIsDefaultImage(true);
+      setImagePreview(null);
+    } else {
+      setIsDefaultImage(false);
+      if (!options.keepPreview) setImagePreview(null);
+    }
+  }, []);
+
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsImageLoading(true);
     const file = e.target.files?.[0];
     if (!file) return;
 
-    resetAllStates();
+    resetDetectionState({ keepPreview: true });
 
-    console.log('updating the image preview');
     const reader = new FileReader();
-    reader.onload = () => {
-      setPreview(reader.result as string);
-    }
+    reader.onload = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
-  };
+    setIsImageLoading(false);
+  }, [resetDetectionState]);
 
-  const handleImageLoaded = async () => {
-    if (imageRef.current) {
-      const img = imageRef.current;
-      const displayWidth = img.clientWidth; // Use display dimensions
-      const displayHeight = img.clientHeight;
-      resetSquares();
 
-      setDimensions({ width: displayWidth, height: displayHeight });
+  const handleImageLoad = useCallback(async () => {
+    if (!imageRef.current) return;
 
-      try {
-        const detections = await faceapi.detectAllFaces(
-          img,
-          new faceapi.TinyFaceDetectorOptions()
-        );
+    const img = imageRef.current;
+    const displayWidth = img.clientWidth;
+    const displayHeight = img.clientHeight;
 
-        // Resize detections to display dimensions
-        const resizedDetections = faceapi.resizeResults(detections, {
-          width: displayWidth,
-          height: displayHeight
-        });
+    setDimensions({ width: displayWidth, height: displayHeight });
 
-        setDetections(resizedDetections);
-      } catch (error) {
-        console.error('Detection error:', error);
-      }
+    try {
+      const detectedFaces = await faceapi.detectAllFaces(
+        img,
+        new faceapi.TinyFaceDetectorOptions()
+      );
+
+      const resizedDetections = faceapi.resizeResults(detectedFaces, {
+        width: displayWidth,
+        height: displayHeight
+      });
+
+      setDetections(resizedDetections);
+      setIsImageLoaded(true);
+    } catch (error) {
+      console.error('Face detection failed:', error);
     }
-  };
+  }, []);
 
+  const resetToDefault = useCallback(() => {
+    resetDetectionState({ resetToDefault: true });
+  }, [resetDetectionState]);
 
-  const resetAllStates = (): void => {
-    setDefaultImage(false);
-    setDetections([]); // Clear previous detections
-    resetSquares();
-    setImageLoaded(false);
-    setDimensions({ width: 0, height: 0 });
-
-  } 
-
-  const resetSquares = () => {
-
-    if (canvasRef.current) { //check if canvasRef.current is defined.
-
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        console.log('resetting squares called!!');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-  }
-
-  // Reset image
-  const resetImage = () => {
-    setDetections([]); // Clear previous detections
-    setDimensions({ width: 0, height: 0 });
-    setImageLoaded(false);
-    setDefaultImage(true); // Reset to default image.
-    setPreview(null);
-    resetSquares();
-  };
+  const triggerFileInput = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   return (
     <div className="w-full max-w-[1200px] mx-auto bg-white rounded-2xl">
@@ -144,26 +144,37 @@ function FaceRecognition() {
               <input
                 type="file"
                 ref={fileInputRef}
-                onChange={handleFileChange}
+                onChange={handleImageUpload}
                 style={{ display: 'none' }}
                 accept="image/*"
               />
-              <Button onClick={triggerFileInput} btnClasses="uploadBtn" text="Upload Image" />
-              <Button onClick={resetImage} btnClasses="uploadBtn" text="Delete image" />
+              <Button
+                onClick={triggerFileInput}
+                btnClasses="uploadBtn"
+                text="Upload Image"
+              />
+              <Button
+                onClick={resetToDefault}
+                btnClasses="uploadBtn"
+                text="Delete image"
+              />
             </div>
           </div>
         </div>
-        <div className=" p-5 flex-1 min-h-[175px]">
+        <div className="p-5 flex-1 min-h-[175px]">
           <div className="image-preview-container flex flex-col items-center justify-center min-h-screen px-4">
             <div className="status-container">
-              <div className="loading-spinner">
-                <div className="spinner"></div>
-                <p>Detecting Faces...</p>
-              </div>
+              {isImageLoading && (
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Detecting Faces...</p>
+                </div>
+              )
+              }
+
               <p className="face-count">
-                {defaultImage ? (
-                  <span> ⏳ Waiting for image...</span>
-                ) : (
+                {!isDefaultImage ? (
+                  (
                     <>
                       {detections.length > 0 ? (
                         <span className="text-green-500">
@@ -174,33 +185,32 @@ function FaceRecognition() {
                           🔴 No Faces Detected
                         </span>
                       )}
-                  </>
-                )}
+                    </>
+                  )
+                ) : ''}
               </p>
             </div>
             <div className="canvas-wrapper">
-              {defaultImage ? (
+              {isDefaultImage ? (
                 <img
                   src="./assets/defaultImg.jpg"
-                  alt="Uploaded Image"
+                  alt="Default placeholder"
                   className="image-preview rounded-2xl"
                 />
               ) : (
-                <>
-                    {preview && (
-                      <div className="mt-4">
-                        <img
-                          src={preview}
-                          ref={imageRef}
-                          alt="Preview"
-                          className="image-preview rounded-2xl"
-                          onLoad={handleImageLoaded}
-                        />
-                      </div>
-                    )}
-                  </>
+                  imagePreview && (
+                    <div className="mt-4">
+                      <img
+                        src={imagePreview}
+                        ref={imageRef}
+                        alt="Uploaded preview"
+                        className="image-preview rounded-2xl"
+                        onLoad={handleImageLoad}
+                      />
+                    </div>
+                  )
               )}
-              <canvas ref={canvasRef} className="canvas-overlay"></canvas>
+              <canvas ref={canvasRef} className="canvas-overlay" />
             </div>
           </div>
         </div>
