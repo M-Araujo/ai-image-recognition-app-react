@@ -150,7 +150,7 @@ function FaceRecognition() {
                 accept="image/*"
               />
 
-              <div className="flex justify-center gap-4 mt-6"> {/* Added wrapper div */}
+              <div className="button-group">
                 <Button
                   onClick={triggerFileInput}
                   btnClasses="uploadBtn"

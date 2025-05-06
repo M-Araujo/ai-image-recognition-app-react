@@ -4,58 +4,18 @@
   padding: 2rem;
   text-align: center;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .card {
   padding: 2em;
-}
-.uploadBtn {
-  background-color: #FFE381;
-  text-align: center;
-}
-.clearBtn {
-  background-color: #FF6E5E;
-  text-align: center;
 }
 
 .canvas-wrapper {
   position: relative;
-  /* Make this a positioning context */
 }
-
 .image-preview {
   max-width: 100%;
   height: auto;
   display: block;
 }
-
 .canvas-overlay {
   position: absolute;
   top: 0;
@@ -65,4 +25,98 @@
 
 .canvas-wrapper {
   position: relative;
+}
+/* 1) Define a shared base so you don’t repeat yourself */
+.button {
+  display: inline-flex;
+  /* shrink-wrap to content, but let us center text/icons */
+  align-items: center;
+  /* vertically center icon + text */
+  justify-content: center;
+  /* horizontally center */
+  padding: 0.5rem 1rem;
+  /* 8px top/bottom, 16px left/right */
+  font-size: 1rem;
+  /* 16px */
+  font-weight: 600;
+  /* semi-bold */
+  border: none;
+  /* we’ll handle outlines on focus */
+  border-radius: 0.375rem;
+  /* 6px rounded corners */
+  cursor: pointer;
+  /* pointer on hover */
+  transition:
+    background-color 0.2s ease,
+    /* smooth color shift */
+    transform 0.1s ease,
+    /* for press effect */
+    box-shadow 0.2s ease;
+  /* for focus ring */
+  text-decoration: none;
+  /* if you ever use <a> */
+  user-select: none;
+  /* no accidental text selection */
+}
+/* 2) Yellow “Upload” button */
+.uploadBtn {
+  composes: button;
+  /* if your setup supports CSS Modules / PostCSS */
+  background-color: #FFE381;
+  color: #333;
+  /* darker text for contrast */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.uploadBtn:hover {
+  background-color: #FFD150;
+  /* slightly deeper yellow */
+}
+
+.uploadBtn:active {
+  transform: scale(0.97);
+  /* subtle press */
+}
+.uploadBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 227, 129, 0.6);
+}
+/* 3) Red “Clear” button */
+.clearBtn {
+  composes: button;
+  background-color: #FF6E5E;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.clearBtn:hover {
+  background-color: #E65550;
+}
+
+.clearBtn:active {
+  transform: scale(0.97);
+}
+
+.clearBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 110, 94, 0.6);
+}
+
+/* 4) Disabled state (if needed) */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 5) Group wrapper for centering & spacing */
+.button-group {
+  display: flex;
+  justify-content: center;
+  /* center group horizontally */
+  align-items: center;
+  /* center vertically if needed */
+  gap: 0.5rem;
+  /* 8px between buttons */
+  width: 100%;
 }
