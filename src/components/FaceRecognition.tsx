@@ -232,8 +232,8 @@ function FaceRecognition() {
             </div>
           </div>
         </div>
-        <div className="p-5 flex-1 min-h-[175px]">
-          <div className="image-preview-container flex flex-col items-center justify-center px-4 p-4">
+        <div className="p-5 flex-1 flex">
+          <div className="image-preview-container flex flex-col items-center justify-center flex-1 px-4 p-4">
             <div className="status-container">
               <div className="status-container">
                 {isImageLoading && <LoadingIndicator />}
