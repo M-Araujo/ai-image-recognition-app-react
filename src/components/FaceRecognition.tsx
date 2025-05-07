@@ -1,6 +1,7 @@
 import Button from './ui/Button.tsx';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import * as faceapi from '@vladmandic/face-api';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 interface ImageDimensions {
   width: number;
@@ -83,6 +84,8 @@ function FaceRecognition() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setIsImageLoading(true);
+
     const validationError = imageValidation(file);
     if (validationError) {
       setError(validationError);
@@ -101,7 +104,7 @@ function FaceRecognition() {
 
   const handleImageLoad = useCallback(async () => {
     if (!imageRef.current) return;
-
+    setIsImageLoading(true);
     const img = imageRef.current;
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
@@ -123,6 +126,9 @@ function FaceRecognition() {
       setIsImageLoaded(true);
     } catch (error) {
       console.error('Face detection failed:', error);
+    } finally {
+      setIsImageLoaded(true);
+      setIsImageLoading(false);
     }
   }, []);
 
@@ -136,22 +142,29 @@ function FaceRecognition() {
 
 
   const imageValidation = (file: File): string | null => {
-    console.log('image validation called');
     const allowedTypes = ['image/jpeg', 'image/png'];
 
     if (!allowedTypes.includes(file.type)) {
-      console.log('first error');
       return 'Please upload a JPEG or PNG image.';
     }
 
     const maxSizeInBytes = 5 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
-      console.log('second error');
       return 'Image too large, please keep it under 5MB.';
     }
     return null;
   }
 
+  const LoadingIndicator = () => {
+    return (
+      <>
+        <div className="flex flex-col items-center space-y-2">
+          <Loader2 className="animate-spin h-8 w-8 text-gray-600" />
+          <p className="text-sm text-gray-700"></p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20">
@@ -163,13 +176,31 @@ function FaceRecognition() {
               Welcome to My Face Detection App!
             </h1>
             <div className="max-w-prose space-y-4">
-              <p className="intro-text text-left">
-                This is an AI-powered face detection app built with React & Face-api.js.
-                Upload an image, and the app will detect faces instantly!
-              </p>
-              <p className="intro-text text-left">
-                I'm Miriam Araújo a Web Developer focused on frontend applications.
-              </p>
+              <div className="max-w-prose space-y-4 text-left">
+                <p className="intro-text">
+                  This is an AI-powered face-detection app built with React & Face-api.js.
+                  Upload an image, and the app will detect faces instantly!
+                </p>
+                <p className="intro-text">
+                  I’m Miriam Araújo—a frontend developer with over 7 years of experience in web development. Lately I’ve been focusing on React, building this project to sharpen my skills.
+                </p>
+                <p className="intro-text">
+                  🚀 <strong>Project goal:</strong> Gain hands-on experience with React’s modern ecosystem (functional components, state management, side effects) by tackling a practical face-detection challenge.
+                </p>
+                <p className="intro-text">
+                  🔗 Feel free to reach out on&nbsp;
+                  <a
+                    href="https://www.linkedin.com/in/miriam-araujo-dev/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    LinkedIn
+                  </a>
+                </p>
+              </div>
+
+
               <input
                 type="file"
                 ref={fileInputRef}
@@ -192,9 +223,10 @@ function FaceRecognition() {
               </div>
 
               {error && (
-                <p className="mt-2 text-sm text-red-600 text-center">
-                  {error}
-                </p>
+                <div className="mt-2 flex items-center bg-red-50 border-l-4 border-red-500 text-red-700 p-2 rounded">
+                  <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                  <span className="text-sm">{error}</span>
+                </div>
               )}
 
             </div>
@@ -203,31 +235,18 @@ function FaceRecognition() {
         <div className="p-5 flex-1 min-h-[175px]">
           <div className="image-preview-container flex flex-col items-center justify-center px-4 p-4">
             <div className="status-container">
-              {isImageLoading && (
-                <div className="loading-spinner">
-                  <div className="spinner"></div>
-                  <p>Detecting Faces...</p>
-                </div>
-              )
-              }
+              <div className="status-container">
+                {isImageLoading && <LoadingIndicator />}
 
-              <p className="face-count ">
-                {!isDefaultImage ? (
-                  (
-                    <>
-                      {detections.length > 0 ? (
-                        <span className="text-green-500">
-                          🟢 Detected Faces: {detections.length}
-                        </span>
-                      ) : (
-                        <span className="text-red-500">
-                          🔴 No Faces Detected
-                        </span>
-                      )}
-                    </>
-                  )
-                ) : ''}
-              </p>
+                {!isDefaultImage && !isImageLoading && isImageLoaded && (
+                  <p className="face-count">
+                    {detections.length > 0
+                      ? <span className="text-green-500">🟢 Detected Faces: {detections.length}</span>
+                      : <span className="text-red-500">🔴 No Faces Detected</span>
+                    }
+                  </p>
+                )}
+              </div>
             </div>
             <div className="canvas-wrapper">
               {isDefaultImage ? (
