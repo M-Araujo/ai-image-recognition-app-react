@@ -177,10 +177,15 @@ function FaceRecognition() {
             </h1>
             <div className="max-w-prose space-y-4">
               <div className="max-w-prose space-y-4 text-left">
+
                 <p className="intro-text">
                   This is an AI-powered face-detection app built with React & Face-api.js.
                   Upload an image, and the app will detect faces instantly!
                 </p>
+                <p className="text-sm text-gray-500 italic">
+                  🔒 All face‐detection happens locally in your browser. No images or data are uploaded or stored anywhere.
+                </p>
+
                 <p className="intro-text">
                   I’m Miriam Araújo—a frontend developer with over 7 years of experience in web development. Lately I’ve been focusing on React, building this project to sharpen my skills.
                 </p>
