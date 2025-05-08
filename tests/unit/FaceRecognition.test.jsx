@@ -64,10 +64,41 @@ describe('<FaceRecognition/>', () => {
         );
 
         expect(screen.getByText(/Detected Faces: 1/i)).toBeVisible();
+    });
 
+    it('should show two faces detected when api returns two values', async () => {
+        faceapi.detectAllFaces.mockResolvedValueOnce([{}, {}]);
+        render(<FaceRecognition />);
+        const fileInput = screen.getByTestId('file-input');
+        const fakeFile = new File(['dummy'], 'a.png', { type: 'image/png' });
+        await userEvent.upload(fileInput, fakeFile);
+
+        const img = await screen.findByAltText('Uploaded preview');
+        fireEvent.load(img);
+
+        await waitFor(() =>
+            expect(screen.queryByText(/Detecting Faces…/i)).not.toBeInTheDocument()
+        );
+
+        expect(screen.getByText(/Detected Faces: 2/i)).toBeVisible();
     });
 
 
+    it('should show five faces detected when api returns five values', async () => {
+        faceapi.detectAllFaces.mockResolvedValueOnce([{}, {}, {}, {}, {}]);
+        render(<FaceRecognition />);
+        const fileInput = screen.getByTestId('file-input');
+        const fakeFile = new File(['dummy'], 'a.png', { type: 'image/png' });
+        await userEvent.upload(fileInput, fakeFile);
 
+        const img = await screen.findByAltText('Uploaded preview');
+        fireEvent.load(img);
+
+        await waitFor(() =>
+            expect(screen.queryByText(/Detecting Faces…/i)).not.toBeInTheDocument()
+        );
+        expect(screen.getByText(/Detected Faces: 5/i)).toBeVisible();
+
+    });
 
 });
