@@ -212,6 +212,7 @@ function FaceRecognition() {
                 onChange={handleImageUpload}
                 style={{ display: 'none' }}
                 accept="image/*"
+                data-testid="file-input"
               />
 
               <div className="button-group">
