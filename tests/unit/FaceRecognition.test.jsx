@@ -140,4 +140,30 @@ describe('<FaceRecognition/>', () => {
         expect(screen.queryByText(/No Faces Detected/i)).toBeNull();
     });
 
+    it('shows the spinner while detecting faces', async () => {
+        faceapi.detectAllFaces.mockResolvedValueOnce(
+            // simulate a slight delay in detection
+            new Promise((res) => setTimeout(() => res([{}]), 100))
+        );
+
+        render(<FaceRecognition />);
+        const fileInput = screen.getByTestId('file-input');
+        const fakeFile = new File(['dummy'], 'a.png', { type: 'image/png' });
+        await userEvent.upload(fileInput, fakeFile);
+
+        const img = await screen.findByAltText('Uploaded preview');
+        fireEvent.load(img);
+
+        // ✅ Wait for spinner to appear
+        expect(document.getElementById('loader')).toBeTruthy();
+
+        // ✅ Wait for spinner to disappear
+        await waitFor(() =>
+            expect(screen.queryByText(/Detecting Faces…/i)).not.toBeInTheDocument()
+        );
+    });
+
+
+
+
 });

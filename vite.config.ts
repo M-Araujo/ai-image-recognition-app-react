@@ -10,5 +10,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: 'src/setupTests.ts',
-  }
+  },
+   build: {
+    // Ensure model files are included in build
+    assetsInclude: ['**/*.json', '**/*.bin'],
+    // Copy public files exactly as they are
+    copyPublicDir: true
+  },
 } as UserConfig)

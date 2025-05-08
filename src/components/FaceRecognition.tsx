@@ -23,16 +23,9 @@ function FaceRecognition() {
   const [dimensions, setDimensions] = useState<ImageDimensions>({ width: 0, height: 0 });
   const [error, setError] = useState<string | null>(null);
 
-  // Load face detection models
+
   useEffect(() => {
     const loadDetectionModels = async () => {
-
-     /* try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        console.log('Face detection models loaded successfully');
-      } catch (error) {
-        console.error('Failed to load face detection models:', error);
-      }*/
 
       try {
         await faceapi.nets.tinyFaceDetector.loadFromUri(import.meta.env.BASE_URL + "models");
@@ -168,7 +161,7 @@ function FaceRecognition() {
     return (
       <>
         <div className="flex flex-col items-center space-y-2">
-          <Loader2 className="animate-spin h-8 w-8 text-gray-600" />
+          <Loader2 id="loader" className="animate-spin h-8 w-8 text-gray-600" />
           <p className="text-sm text-gray-700"></p>
         </div>
       </>
