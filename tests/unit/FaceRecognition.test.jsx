@@ -101,4 +101,43 @@ describe('<FaceRecognition/>', () => {
 
     });
 
+    it('shows a validation error when the user uploads a gif file', async () => {
+        faceapi.detectAllFaces.mockResolvedValueOnce([{}]);
+        render(<FaceRecognition />);
+        const fileInput = screen.getByTestId('file-input');
+        const gifFile = new File(['dummy'], 'a.gif', { type: 'image/gif' });
+        await userEvent.upload(fileInput, gifFile);
+
+        expect(
+            await screen.findByText(/please upload a JPEG or PNG image/i)
+        ).toBeVisible();
+
+        expect(screen.queryByText(/detecting faces/i)).toBeNull();
+    });
+
+    it('clears the image and resets state when clear image is clicked', async () => {
+        faceapi.detectAllFaces.mockResolvedValueOnce([{}]);
+        render(<FaceRecognition />);
+        const fileInput = screen.getByTestId('file-input');
+
+        const fakeFile = new File(['dummy'], 'a.png', { type: 'image/png' });
+        await userEvent.upload(fileInput, fakeFile);
+
+        const img = await screen.findByAltText('Uploaded preview');
+        fireEvent.load(img);
+
+        await waitFor(() =>
+            expect(screen.queryByText(/Detecting Faces…/i)).not.toBeInTheDocument()
+        );
+        expect(screen.getByText(/Detected Faces: 1/i)).toBeVisible();
+
+        const clearBtn = screen.getByRole('button', { name: /clear image/i });
+        await userEvent.click(clearBtn);
+
+        expect(screen.getByAltText(/default placeholder/i)).toBeVisible();
+
+        expect(screen.queryByText(/Detected Faces:/i)).toBeNull();
+        expect(screen.queryByText(/No Faces Detected/i)).toBeNull();
+    });
+
 });
