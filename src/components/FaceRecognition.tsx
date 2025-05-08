@@ -26,12 +26,21 @@ function FaceRecognition() {
   // Load face detection models
   useEffect(() => {
     const loadDetectionModels = async () => {
-      try {
+
+     /* try {
         await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
         console.log('Face detection models loaded successfully');
       } catch (error) {
         console.error('Failed to load face detection models:', error);
-      }
+      }*/
+
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(import.meta.env.BASE_URL + "models");
+
+      } catch (error) {
+        console.error("❌ Error loading Face-api.js models", error);
+        }
+
     };
 
     loadDetectionModels();
