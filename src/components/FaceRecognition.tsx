@@ -217,15 +217,15 @@ function FaceRecognition() {
                 data-testid="file-input"
               />
 
-              <div className="button-group">
+              <div className="flex justify-center gap-4 mt-6">
                 <Button
                   onClick={triggerFileInput}
-                  btnClasses="uploadBtn"
+                  btnClasses="uploadBtn transition-transform transform hover:scale-105 active:scale-95"
                   text="Upload Image"
                 />
                 <Button
                   onClick={resetToDefault}
-                  btnClasses="clearBtn"
+                  btnClasses="clearBtn transition-transform transform hover:scale-105 active:scale-95"
                   text="Clear image"
                 />
               </div>
@@ -247,7 +247,7 @@ function FaceRecognition() {
                 {isImageLoading && <LoadingIndicator />}
 
                 {!isDefaultImage && !isImageLoading && isImageLoaded && (
-                  <p className="face-count">
+                  <p className={`face-count transition-all duration-500 ease-in-out ${isImageLoaded} ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
                     {detections.length > 0
                       ? <span className="text-green-500">🟢 Detected Faces: {detections.length}</span>
                       : <span className="text-red-500">🔴 No Faces Detected</span>
@@ -270,13 +270,13 @@ function FaceRecognition() {
                         src={imagePreview}
                         ref={imageRef}
                         alt="Uploaded preview"
-                        className="image-preview rounded-2xl max-h-80"
+                        className={`image-preview rounded-2xl max-h-80 transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                         onLoad={handleImageLoad}
                       />
                     </div>
                   )
               )}
-              <canvas ref={canvasRef} className="canvas-overlay" />
+              <canvas ref={canvasRef} className={`canvas-overlay transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} />
             </div>
           </div>
         </div>
