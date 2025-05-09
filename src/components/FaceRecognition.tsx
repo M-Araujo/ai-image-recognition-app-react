@@ -169,7 +169,7 @@ function FaceRecognition() {
   }
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20">
+    <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20 animate-fade-in-up">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="p-5 flex-1 min-h-[175px]">
 
@@ -261,7 +261,8 @@ function FaceRecognition() {
                 <img
                   src="./assets/defaultImg.jpg"
                   alt="Default placeholder"
-                  className="image-preview rounded-2xl max-h-80"
+                  className="image-preview rounded-2xl max-h-80 transition-opacity duration-500 opacity-0"
+                  onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
                 />
               ) : (
                   imagePreview && (
