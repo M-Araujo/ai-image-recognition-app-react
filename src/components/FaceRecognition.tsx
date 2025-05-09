@@ -82,7 +82,6 @@ function FaceRecognition() {
 
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
-    setIsImageLoading(true);
     const file = e.target.files?.[0];
     if (!file) return;
 
