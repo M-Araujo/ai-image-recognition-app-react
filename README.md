@@ -2,6 +2,8 @@
 
 This is an AI-powered face detection app built with React and Face-api.js. Upload an image and the app will detect faces in real-time.
 
+View the app on GitHub Pages: https://m-araujo.github.io/ai-image-recognition-app-react/
+
 ## Features
 - Local face detection with no data uploaded to any server
 - Upload image from local device
