@@ -9,12 +9,10 @@ interface ImageDimensions {
 }
 
 function FaceRecognition() {
-  // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // State
   const [isDefaultImage, setIsDefaultImage] = useState(true);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [detections, setDetections] = useState<faceapi.FaceDetection[]>([]);
@@ -23,23 +21,19 @@ function FaceRecognition() {
   const [dimensions, setDimensions] = useState<ImageDimensions>({ width: 0, height: 0 });
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     const loadDetectionModels = async () => {
-
       try {
         await faceapi.nets.tinyFaceDetector.loadFromUri(import.meta.env.BASE_URL + "models");
 
       } catch (error) {
         console.error("❌ Error loading Face-api.js models", error);
-        }
-
+      }
     };
 
     loadDetectionModels();
   }, []);
 
-  // Draw face detections on canvas
   useEffect(() => {
     const drawFaceDetections = () => {
       if (!canvasRef.current || detections.length === 0) return;
@@ -106,6 +100,7 @@ function FaceRecognition() {
   const handleImageLoad = useCallback(async () => {
     if (!imageRef.current) return;
     setIsImageLoading(true);
+
     const img = imageRef.current;
     const displayWidth = img.clientWidth;
     const displayHeight = img.clientHeight;
@@ -168,7 +163,7 @@ function FaceRecognition() {
   }
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl mt-20 animate-fade-in-up">
+    <div className="w-full max-w-[1000px] mx-auto bg-white dark:bg-zinc-900 rounded-2xl mt-20 animate-fade-in-up">
       <div className="flex flex-col md:flex-row gap-3">
         <div className="p-5 flex-1 min-h-[175px]">
 
@@ -212,7 +207,7 @@ function FaceRecognition() {
                 ref={fileInputRef}
                 onChange={handleImageUpload}
                 style={{ display: 'none' }}
-                accept="image/*"
+                accept="image/jpeg, image/png" 
                 data-testid="file-input"
               />
 
