@@ -20,6 +20,7 @@ npm install
 3. Run the application:
 npm start
 
+A browser window will open at http://localhost:5173/ai-image-recognition-app-react/ where you can upload an image and see the face detection in action.
 
 Technologies Used
 React
